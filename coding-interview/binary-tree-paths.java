@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.tree.TreeNode;
+
 /**
  * Definition for a binary tree node. public class TreeNode { int val; TreeNode
  * left; TreeNode right; TreeNode() {} TreeNode(int val) { this.val = val; }
@@ -12,25 +17,28 @@ class Solution {
         return false;
     }
 
-    public void NLR(TreeNode current, String paths, List<String> output) {
+    public void NLR(TreeNode current, StringBuilder path, List<String> output) {
         if (current != null) {
+            int len = path.length();
             if (!isLeaf(current)) {
-                paths += current.val + "->";
+                path.append(current.val);
+                path.append("->");
             } else {
-                paths += current.val;
-                output.add(paths);
+                path.append(current.val);
+                output.add(path.toString());
             }
-            // pre-order on the left tree
-            NLR(current.left, paths, output);
-            // pre-order ont the right tree
-            NLR(current.right, paths, output);
+            NLR(current.left, path, output);
+            NLR(current.right, path, output);
+            path.setLength(len);
         }
     }
 
     public List<String> binaryTreePaths(TreeNode root) {
         List<String> output = new ArrayList<String>();
 
-        NLR(root, new String(""), output);
+        // String path use String builder
+        StringBuilder path = new StringBuilder();
+        NLR(root, path, output);
         return output;
     }
 }
