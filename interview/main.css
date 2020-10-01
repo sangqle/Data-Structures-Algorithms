@@ -1,0 +1,33 @@
+* {
+  box-sizing: border-box;
+}
+table,
+th,
+td {
+  border: 1px solid black;
+  border-spacing: 0;
+}
+
+table {
+  width: 1250px;
+  height: auto;
+}
+
+#board {
+  border-collapse: collapse;
+}
+
+#board td {
+  width: 25px;
+  height: 25px;
+}
+.wall {
+  background-color: rgb(175, 216, 248);
+}
+
+.start {
+  background-color: red;
+}
+.des {
+  background-color: black;
+}
