@@ -1,4 +1,5 @@
 console.log("Hello interview");
+
 let start = {
   x: 0,
   y: 0,
@@ -194,16 +195,57 @@ function bfs(e) {
       head = head.parent;
     }
   }, 1);
+}
 
-  document.getElementById("run").addEventListener("click", () => {
-    let n = routes.length - 1;
-    setInterval(() => {
-      if (n > 0) {
-        let currentId = `${routes[n].x}-${routes[n].y}`;
-        let currentElement = document.getElementById(currentId);
-        currentElement.classList.add("path");
-        n--;
+document.getElementById("run").addEventListener("click", () => {
+  let n = routes.length - 1;
+  setInterval(() => {
+    if (n > 0) {
+      let currentId = `${routes[n].x}-${routes[n].y}`;
+      let currentElement = document.getElementById(currentId);
+      currentElement.classList.add("path");
+      n--;
+    }
+  }, 50);
+});
+
+// Depth first search
+document.getElementById("dfs").addEventListener("click", dfs);
+function dfs() {
+  let S = [];
+  let parent = {};
+  let start = board.start;
+  S.push(start);
+  let head;
+  while (S.length > 0) {
+    head = S.pop();
+    if (head.x === board.des.x && head.y === board.des.y) break;
+    let neighbours = list_neighbours(head);
+    for (let i = neighbours.length - 1; i >= 0; i--) {
+      neighbours[i].parent = head;
+      S.push(neighbours[i]);
+      let neighbourId = `${neighbours[i].x}-${neighbours[i].y}`;
+      let neighbour = document.getElementById(neighbourId);
+      let neighbourClassList = [...neighbour.classList];
+      if (
+        !neighbourClassList.includes("neighbour") &&
+        !neighbourClassList.includes("start") &&
+        !neighbourClassList.includes("des")
+      ) {
+        neighbour.classList.add("neighbour");
+        listNodes.push(neighbour);
       }
-    }, 50);
-  });
+    }
+  }
+  let k = 0;
+  setInterval(() => {
+    if (k < listNodes.length) listNodes[k++].classList.add("check");
+  }, 10);
+
+  setInterval(() => {
+    while (head.parent) {
+      routes.push(head);
+      head = head.parent;
+    }
+  }, 1);
 }
