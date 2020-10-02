@@ -156,15 +156,19 @@ function list_neighbours(point) {
 }
 
 let listNodes = [];
+let routes = [];
 function bfs(e) {
   let Q = [];
+  let parent = {};
   let start = board.start;
   Q.push(start);
+  let head;
   while (Q.length > 0) {
-    let head = Q.shift();
+    head = Q.shift();
     if (head.x === board.des.x && head.y === board.des.y) break;
     let neighbours = list_neighbours(head);
     for (let i = 0; i < neighbours.length; i++) {
+      neighbours[i].parent = head;
       Q.push(neighbours[i]);
       let neighbourId = `${neighbours[i].x}-${neighbours[i].y}`;
       let neighbour = document.getElementById(neighbourId);
@@ -183,4 +187,23 @@ function bfs(e) {
   setInterval(() => {
     if (k < listNodes.length) listNodes[k++].classList.add("check");
   }, 20);
+
+  setInterval(() => {
+    while (head.parent) {
+      routes.push(head);
+      head = head.parent;
+    }
+  }, 1);
+
+  document.getElementById("run").addEventListener("click", () => {
+    let n = routes.length - 1;
+    setInterval(() => {
+      if (n > 0) {
+        let currentId = `${routes[n].x}-${routes[n].y}`;
+        let currentElement = document.getElementById(currentId);
+        currentElement.classList.add("path");
+        n--;
+      }
+    }, 50);
+  });
 }
