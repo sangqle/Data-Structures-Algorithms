@@ -249,3 +249,23 @@ function dfs() {
     }
   }, 1);
 }
+document.getElementById("random-maze").addEventListener("click", randomMaze);
+function randomMaze() {
+  for (let i = 0; i < board.height; i++) {
+    for (let j = 0; j < board.width; j++) {
+      let random = Math.floor(Math.random() * 2);
+      if (
+        random &&
+        i !== board.start.x &&
+        i !== board.des.x &&
+        j !== board.start.y &&
+        j !== board.des.y
+      ) {
+        let currentId = `${i}-${j}`;
+        let currentElement = document.getElementById(currentId);
+        A[i][j] = 0;
+        currentElement.className = "wall";
+      }
+    }
+  }
+}
