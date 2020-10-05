@@ -32,7 +32,7 @@ table {
   background-color: black;
 }
 
-.check {
+.visited {
   background-color: chartreuse;
 }
 .path {

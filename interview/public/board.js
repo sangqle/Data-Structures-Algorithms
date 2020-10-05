@@ -1,4 +1,6 @@
-console.log("Board");
+const unweightedSearchAlgorithm = require("./pathfindingAlgroithms/unweightedSearchAlgorithm");
+const launchInstantAnimations = require("./animations/launchInstantAnimations");
+
 const Node = require("./node");
 function Board(height, width) {
   this.height = height;
@@ -14,6 +16,8 @@ function Board(height, width) {
   this.pressedNodeStatus = "normal";
   this.previouslySwitchedNode = null;
   this.previouslyPressedNodeStatus = null;
+  this.currentAlgorithm = null;
+  this.nodesToAnimate = [];
 }
 
 Board.prototype.initialise = function () {
@@ -166,7 +170,35 @@ Board.prototype.getNode = function (id) {
   let col = parseInt(coordinates[1]);
   return this.boardArray[row][col];
 };
+
+Board.prototype.instantAlgorithm = function () {
+  let unweightedAlgorithms = ["dfs", "bfs"];
+  let success = unweightedSearchAlgorithm(
+    this.nodes,
+    this.start,
+    this.target,
+    this.boardArray,
+    this.currentAlgorithm,
+    this.nodesToAnimate
+  );
+  launchInstantAnimations(this, success, "unweighted");
+};
+
+Board.prototype.redoAlgorithm = function () {
+  this.instantAlgorithm();
+};
 let height = 20;
 let width = 50;
 let newBoard = new Board(height, width);
 newBoard.initialise();
+
+// Add event listenver for button
+document.getElementById("bfs").addEventListener("click", () => {
+  newBoard.currentAlgorithm = "bfs";
+  newBoard.redoAlgorithm();
+});
+
+document.getElementById("dfs").addEventListener("click", () => {
+  newBoard.currentAlgorithm = "dfs";
+  newBoard.redoAlgorithm();
+});

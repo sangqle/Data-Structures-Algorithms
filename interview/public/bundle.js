@@ -1,5 +1,20 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-console.log("Board");
+function launchInstantAnimations(board, success, type) {
+  setInterval(() => {
+    let currentNode = board.nodesToAnimate.shift();
+    if (!currentNode) return;
+    let currentElement = document.getElementById(currentNode.id);
+    if (currentNode.id !== board.target && currentNode.id !== board.start)
+      currentElement.className = currentNode.status;
+    console.log(currentNode);
+  }, 10);
+}
+module.exports = launchInstantAnimations;
+
+},{}],2:[function(require,module,exports){
+const unweightedSearchAlgorithm = require("./pathfindingAlgroithms/unweightedSearchAlgorithm");
+const launchInstantAnimations = require("./animations/launchInstantAnimations");
+
 const Node = require("./node");
 function Board(height, width) {
   this.height = height;
@@ -15,6 +30,8 @@ function Board(height, width) {
   this.pressedNodeStatus = "normal";
   this.previouslySwitchedNode = null;
   this.previouslyPressedNodeStatus = null;
+  this.currentAlgorithm = null;
+  this.nodesToAnimate = [];
 }
 
 Board.prototype.initialise = function () {
@@ -167,12 +184,40 @@ Board.prototype.getNode = function (id) {
   let col = parseInt(coordinates[1]);
   return this.boardArray[row][col];
 };
+
+Board.prototype.instantAlgorithm = function () {
+  let unweightedAlgorithms = ["dfs", "bfs"];
+  let success = unweightedSearchAlgorithm(
+    this.nodes,
+    this.start,
+    this.target,
+    this.boardArray,
+    this.currentAlgorithm,
+    this.nodesToAnimate
+  );
+  launchInstantAnimations(this, success, "unweighted");
+};
+
+Board.prototype.redoAlgorithm = function () {
+  this.instantAlgorithm();
+};
 let height = 20;
 let width = 50;
 let newBoard = new Board(height, width);
 newBoard.initialise();
 
-},{"./node":2}],2:[function(require,module,exports){
+// Add event listenver for button
+document.getElementById("bfs").addEventListener("click", () => {
+  newBoard.currentAlgorithm = "bfs";
+  newBoard.redoAlgorithm();
+});
+
+document.getElementById("dfs").addEventListener("click", () => {
+  newBoard.currentAlgorithm = "dfs";
+  newBoard.redoAlgorithm();
+});
+
+},{"./animations/launchInstantAnimations":1,"./node":3,"./pathfindingAlgroithms/unweightedSearchAlgorithm":4}],3:[function(require,module,exports){
 function Node(id, status) {
   this.id = id;
   this.status = status;
@@ -183,4 +228,92 @@ function Node(id, status) {
 }
 module.exports = Node;
 
-},{}]},{},[1]);
+},{}],4:[function(require,module,exports){
+function unweightedSearchAlgorithm(
+  nodes,
+  start,
+  target,
+  boardArray,
+  algorithmName,
+  nodesToAnimate
+) {
+  if (!start || !target || start === target) {
+    return false;
+  }
+
+  let structure = [nodes[start]]; // structure can be eithir Stack or Queue demand on the name of algorithm(BFS or DFS)
+  let exploredNodes = { start: true };
+  while (structure.length) {
+    let currentNode;
+    if (algorithmName === "bfs") {
+      currentNode = structure.shift();
+    } else {
+      currentNode = structure.pop();
+    }
+    nodesToAnimate.push(currentNode);
+    // update current node is check
+    currentNode.status = "visited";
+    if (currentNode.id === target) {
+      return "success";
+    }
+    let currentNeighbors = getNeighbors(
+      currentNode.id,
+      nodes,
+      boardArray,
+      algorithmName
+    );
+    currentNeighbors.forEach((neighbor) => {
+      if (!exploredNodes[neighbor]) {
+        if (algorithmName === "bfs") {
+          exploredNodes[neighbor] = true;
+        }
+        nodes[neighbor].previousNode = currentNode.id;
+        structure.push(nodes[neighbor]);
+      }
+    });
+  }
+  return false;
+}
+
+function getNeighbors(id, nodes, boardArray, algorithmName) {
+  let coordinates = id.split("-");
+  let x = parseInt(coordinates[0]);
+  let y = parseInt(coordinates[1]);
+  let neighbors = [];
+  let potentialNeighbor;
+  if (boardArray[x - 1] && boardArray[x - 1][y]) {
+    potentialNeighbor = `${(x - 1).toString()}-${y.toString()}`; // exp: "0-0", "0-1"
+    if (nodes[potentialNeighbor].status !== "wall") {
+      if (algorithmName === "bfs") {
+        neighbors.push(potentialNeighbor);
+      }
+    }
+  }
+  if (boardArray[x][y + 1]) {
+    potentialNeighbor = `${x.toString()}-${(y + 1).toString()}`;
+    if (nodes[potentialNeighbor].status !== "wall") {
+      if (algorithmName === "bfs") {
+        neighbors.push(potentialNeighbor);
+      }
+    }
+  }
+  if (boardArray[x + 1] && boardArray[x + 1][y]) {
+    potentialNeighbor = `${(x + 1).toString()}-${y.toString()}`;
+    if (nodes[potentialNeighbor].status !== "wall") {
+      neighbors.push(potentialNeighbor);
+    }
+  }
+  if (boardArray[x][y - 1]) {
+    potentialNeighbor = `${x.toString()}-${(y - 1).toString()}`;
+
+    if (nodes[potentialNeighbor].status !== "wall") {
+      if (algorithmName === "bfs") {
+        neighbors.push(potentialNeighbor);
+      }
+    }
+  }
+  return neighbors;
+}
+module.exports = unweightedSearchAlgorithm;
+
+},{}]},{},[2]);
