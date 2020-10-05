@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+}
+table,
+th,
+td {
+  border: 1px solid rgb(185, 182, 182);
+  border-spacing: 0;
+}
+
+table {
+  width: 1250px;
+  height: auto;
+}
+
+#board {
+  border-collapse: collapse;
+}
+
+#board td {
+  width: 25px;
+  height: 25px;
+}
+.wall {
+  background-color: rgb(175, 216, 248);
+}
+
+.start {
+  background-color: red;
+}
+.target {
+  background-color: black;
+}
+
+.check {
+  background-color: chartreuse;
+}
+.path {
+  background-color: blue;
+}
