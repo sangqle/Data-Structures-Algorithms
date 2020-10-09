@@ -1,19 +1,46 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-function launchInstantAnimations(board, success, type) {
-  setInterval(() => {
-    let currentNode = board.nodesToAnimate.shift();
-    if (!currentNode) return;
-    let currentElement = document.getElementById(currentNode.id);
-    if (currentNode.id !== board.target && currentNode.id !== board.start)
-      currentElement.className = currentNode.status;
-    console.log(currentNode);
-  }, 10);
+async function launchInstantAnimations(board, success, type) {
+  let index = board.nodesToAnimate.length;
+  timeout(index);
+  function timeout(index) {
+    setTimeout(() => {
+      if (index === 0) {
+        return;
+      }
+      let currentNode = board.nodesToAnimate.shift();
+      if (!currentNode) return;
+      let currentElement = document.getElementById(currentNode.id);
+      if (currentNode.id !== board.target && currentNode.id !== board.start)
+        currentElement.className = currentNode.status;
+      // console.log(currentNode);
+      timeout(--index);
+    }, 20);
+  }
 }
+
 module.exports = launchInstantAnimations;
 
 },{}],2:[function(require,module,exports){
+function shortestPathAnimations(shortestNodesAnimations) {
+  let index = shortestNodesAnimations.length - 1;
+  timeout(index);
+  function timeout(index) {
+    setTimeout(() => {
+      if (index <= 0) return;
+      let currentNode = shortestNodesAnimations[index];
+      let currentElement = document.getElementById(currentNode.id);
+      currentElement.className = "path";
+      timeout(--index);
+    }, 20);
+  }
+  //   console.log(shortestNodesAnimations);
+}
+module.exports = shortestPathAnimations;
+
+},{}],3:[function(require,module,exports){
 const unweightedSearchAlgorithm = require("./pathfindingAlgroithms/unweightedSearchAlgorithm");
 const launchInstantAnimations = require("./animations/launchInstantAnimations");
+const shortestPathAnimations = require("./animations/shortestPathAnimations");
 
 const Node = require("./node");
 function Board(height, width) {
@@ -32,6 +59,7 @@ function Board(height, width) {
   this.previouslyPressedNodeStatus = null;
   this.currentAlgorithm = null;
   this.nodesToAnimate = [];
+  this.shortestPathNodesToAnimate = [];
 }
 
 Board.prototype.initialise = function () {
@@ -198,6 +226,15 @@ Board.prototype.instantAlgorithm = function () {
   launchInstantAnimations(this, success, "unweighted");
 };
 
+// Draw path
+Board.prototype.drawShortestPath = function () {
+  let node = this.nodes[`${this.target}`];
+  while (node.id !== this.start) {
+    this.shortestPathNodesToAnimate.push(node);
+    node = this.nodes[`${node.previousNode}`];
+  }
+};
+
 Board.prototype.redoAlgorithm = function () {
   this.instantAlgorithm();
 };
@@ -217,7 +254,7 @@ document.getElementById("dfs").addEventListener("click", () => {
   newBoard.redoAlgorithm();
 });
 
-},{"./animations/launchInstantAnimations":1,"./node":3,"./pathfindingAlgroithms/unweightedSearchAlgorithm":4}],3:[function(require,module,exports){
+},{"./animations/launchInstantAnimations":1,"./animations/shortestPathAnimations":2,"./node":4,"./pathfindingAlgroithms/unweightedSearchAlgorithm":5}],4:[function(require,module,exports){
 function Node(id, status) {
   this.id = id;
   this.status = status;
@@ -228,7 +265,7 @@ function Node(id, status) {
 }
 module.exports = Node;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 function unweightedSearchAlgorithm(
   nodes,
   start,
@@ -316,4 +353,4 @@ function getNeighbors(id, nodes, boardArray, algorithmName) {
 }
 module.exports = unweightedSearchAlgorithm;
 
-},{}]},{},[2]);
+},{}]},{},[3]);

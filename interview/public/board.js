@@ -1,5 +1,6 @@
 const unweightedSearchAlgorithm = require("./pathfindingAlgroithms/unweightedSearchAlgorithm");
 const launchInstantAnimations = require("./animations/launchInstantAnimations");
+const shortestPathAnimations = require("./animations/shortestPathAnimations");
 
 const Node = require("./node");
 function Board(height, width) {
@@ -18,6 +19,7 @@ function Board(height, width) {
   this.previouslyPressedNodeStatus = null;
   this.currentAlgorithm = null;
   this.nodesToAnimate = [];
+  this.shortestPathNodesToAnimate = [];
 }
 
 Board.prototype.initialise = function () {
@@ -182,6 +184,15 @@ Board.prototype.instantAlgorithm = function () {
     this.nodesToAnimate
   );
   launchInstantAnimations(this, success, "unweighted");
+};
+
+// Draw path
+Board.prototype.drawShortestPath = function () {
+  let node = this.nodes[`${this.target}`];
+  while (node.id !== this.start) {
+    this.shortestPathNodesToAnimate.push(node);
+    node = this.nodes[`${node.previousNode}`];
+  }
 };
 
 Board.prototype.redoAlgorithm = function () {
