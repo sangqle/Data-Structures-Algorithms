@@ -102,7 +102,7 @@ class PatchLibrary(object):
         :return: num_samples patches from class 'class_num' randomly selected.
         """
         h, w = self.patch_size[0], self.patch_size[1]
-        patches, labels = [], np.full(num_patches * self.augmentation_multiplier, class_num, 'float')
+        patches, labels = [], np.full(num_patches * self.augmentation_multiplier, class_num, dtype=float)
         print('Finding patches of class {}...'.format(class_num))
 
         full = False
