@@ -2,7 +2,6 @@ const express = require("express");
 const { exec } = require("child_process");
 
 
-// Create server
 const app = express();
 
 app.use("/public", express.static(__dirname + "/public"));

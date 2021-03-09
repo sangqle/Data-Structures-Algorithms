@@ -1,5 +1,4 @@
 import java.util.*;
-// Solution
 class Solution {
 	public static List dec2bi(int num) {
 		int num2 = num;
